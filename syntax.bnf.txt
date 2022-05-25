@@ -1,0 +1,22 @@
+<syntax> ::= <opt-pragma> | <expr>
+<opt-pragma> ::= "" | "$" <ws> <g-pragma-name> <opt-pragma>
+<g-pragma-name> ::= "DEBUGALL"
+<ws> ::= <ws-char> | <ws-char> <ws>
+<ws-char> ::= " " | "\n"
+<opt-ws> ::= "" | <ws>
+<expr> ::= <opt-ws> <expr-value> <opt-ws>
+<expr-value> ::= <list> | <quoted> | <const> | <literal> | <symbol> | <gensym>
+<exprs> ::= "" | <expr> <exprs>
+<list> ::= "(" <exprs> ")"
+<quoted> ::= "\" <expr-value>
+<const> ::= "##" <user-const> | "#" <lang-const>
+<user-const> ::= <VALIDSYMBOL>
+<lang-const> ::= "t" | "f" | "nil"
+<literal> ::= <dec-literal> | <bin-literal>
+<dec-literal> ::= <number> | <number> <dec-literal>
+<bin-literal> ::= ":" <bin-literal-value>
+<bin-literal-value> ::= "0" | "0" <bin-literal-value> | "1" | "1" <bin-literal-value>
+<symbol> ::= <VALIDSYMBOL>
+<gensym> ::= "%" <VALIDSYMBOL> | "%_"
+<VALIDSYMBOL> ::= "A"..."Z" | "a"..."z" | "-" | "+" | "*" | "/"
+
