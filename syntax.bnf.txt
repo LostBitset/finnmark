@@ -1,6 +1,6 @@
 <syntax> ::= <opt-pragma> | <expr>
 <opt-pragma> ::= "" | "$" <ws> <g-pragma-name> <opt-pragma>
-<g-pragma-name> ::= "DEBUGALL"
+<g-pragma-name> ::= "DEBUGALL" | "INVERTOP"
 <ws> ::= <ws-char> | <ws-char> <ws>
 <ws-char> ::= " " | "\n"
 <opt-ws> ::= "" | <ws>
