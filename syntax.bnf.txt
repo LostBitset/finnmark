@@ -18,5 +18,6 @@
 <bin-literal-value> ::= "0" | "0" <bin-literal-value> | "1" | "1" <bin-literal-value>
 <symbol> ::= <VALIDSYMBOL>
 <gensym> ::= "%" <VALIDSYMBOL> | "%_"
-<VALIDSYMBOL> ::= "A"..."Z" | "a"..."z" | "-" | "+" | "*" | "/"
+<VALIDSYMBOL> ::= <valid-symbol-char> | <valid-symbol-char> <VALIDSYMBOL>
+<valid-symbol-char> ::= "A"..."Z" | "a"..."z" | "-" | "+" | "*" | "/"
 
