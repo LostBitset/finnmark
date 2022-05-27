@@ -33,15 +33,15 @@ public class FinnmarkParser {
         return null;
     }
 
-    private static int readDecDouble(String s) {
-        return 0;
+    private static double readDecDouble(String s) {
+        return 0.0;
     }
 
     private static int readDecInt(String s) {
         return 0;
     }
 
-    private static FVal_NUM asNum(int n) {
+    private static FVal_NUM asNum(double n) {
         return null;
     }
 
