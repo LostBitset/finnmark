@@ -1,3 +1,1 @@
-public class FVal {
-    // TODO
-}
+public interface FVal {}

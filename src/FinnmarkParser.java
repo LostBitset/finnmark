@@ -25,7 +25,43 @@ public class FinnmarkParser {
                     return asNum(readDecDouble(s));
                 }
             default:
-                return parseSymb(s);
+                return parseSym(s);
         }
+    }
+
+    private static FVal_SYM parseSym(String s) {
+        return null;
+    }
+
+    private static int readDecDouble(String s) {
+        return 0;
+    }
+
+    private static int readDecInt(String s) {
+        return 0;
+    }
+
+    private static FVal_NUM asNum(int n) {
+        return null;
+    }
+
+    private static FVal_IDX asIdx(int n) {
+        return null;
+    }
+
+    private static int readBinInt(String s) {
+        return 0;
+    }
+
+    private static FVal_STR parseString(String s) {
+        return null;
+    }
+
+    private static FVal_FMS parseFormatted(String s) {
+        return null;
+    }
+
+    private static FVal_LST parseList(String s) {
+        return null;
     }
 }
