@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.stream.Stream;
 
 public class FinnmarkParser {
     public static FVal parseExpr(String raw) {
@@ -16,7 +15,6 @@ public class FinnmarkParser {
             case '\'':
                 return parseString(s);
             case ':':
-                int n = readBinInt(s);
                 if (s.charAt(s.length() - 1) == 'a') {
                     return asIdx(readBinInt(
                         s.substring(1, s.length() - 2)
@@ -44,15 +42,15 @@ public class FinnmarkParser {
     }
 
     private static double readDecDouble(String s) {
-        return 0.0;
+        return (double) Double.valueOf(s);
     }
 
     private static int readDecInt(String s) {
-        return 0;
+        return (int) Integer.parseInt(s);
     }
     
     private static int readBinInt(String s) {
-        return 0;
+        return (int) Integer.parseInt(s, 2);
     }
 
     private static FVal_NUM asNum(double n) {

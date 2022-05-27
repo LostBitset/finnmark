@@ -1,3 +1,5 @@
+import java.util.HashMap;
+
 public class RRegistry {
-    // TODO
+    public HashMap<FVal, FBytecode> gen;
 }
