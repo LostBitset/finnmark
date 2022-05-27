@@ -18,8 +18,17 @@ public class Evaluator {
         if (car == null) throw new Error("Cannot evaluate an empty list");
         if (car instanceof SpecialForm) switch (((SpecialForm)car).ch) {
             case 'c':
-                // TODO `chain'
-                break;
+                FVal result = eval_any(cdr[cdr.length - 1], env);
+                for (int i = cdr.length - 2; i > 0; i--) {
+                    FVal_LST v = (FVal_LST)(cdr[i]);
+                    FVal[] alt = new FVal[v.u.length + 1];
+                    for (int j = 0; j < v.u.length; j++) {
+                        alt[j] = v.u[j];
+                    }
+                    alt[v.u.length] = result;
+                    result = eval_code(new FVal_LST(alt), env);
+                }
+                return result;
             case 'w':
                 HashMap<String,FVal> env_pr1 = new HashMap<>(env);
                 env_pr1.put(((FVal_SYM)cdr[0]).uName, eval_any(cdr[1], env));
