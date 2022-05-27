@@ -15,7 +15,7 @@
 <dec-literal> ::= "-" <dec-literal> | "0"..."9" | "0"..."9" <dec-literal>
 <bin-literal> ::= ":" <bin-literal-value>
 <bin-literal-value> ::= "0" | "0" <bin-literal-value> | "1" | "1" <bin-literal-value>
-<str-literal> ::= "'" <str-contents> "'" | "~" <str-literal>
+<str-literal> ::= "'" <str-contents> "'" | "~" "'" <str-contents> "'"
 <str-contents> ::= "" | <str-unit> <str-contents>
 <str-unit> ::= !{"'","\\"} | "\\" !{}
 <symbol> ::= <VALIDSYMBOL>
