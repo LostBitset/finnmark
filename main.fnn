@@ -1,0 +1,4 @@
+(chain
+    (greet 'Oliver')
+    (with-fn greet name
+        (println ~'Hello, %name%.')))
