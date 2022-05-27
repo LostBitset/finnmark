@@ -1,4 +1,4 @@
-public class FVal_FUN {
+public class FVal_FUN implements FVal {
     public String[] args;
     public FVal body;
 

@@ -7,5 +7,6 @@ public class FBytecode {
 
     public FVal exec() {
         // TODO
+        return new FVal_STR("<todo>");
     }
 }
