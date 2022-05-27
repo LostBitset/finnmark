@@ -25,21 +25,23 @@ public class Evaluator {
                 env_pr1.put(((FVal_SYM)cdr[0]).uName, eval_any(cdr[1], env));
                 return eval_any(cdr[2], env_pr1);
             case 'n':
-                String[] args = new String[cdr.length - 2];
-                for (int i = 0; i < args.length; i++)
-                { args[i] = ((FVal_SYM)(cdr[i + 1])).uName; }
+                String[] args1 = new String[cdr.length - 2];
+                for (int i = 0; i < args1.length; i++)
+                { args1[i] = ((FVal_SYM)(cdr[i + 1])).uName; }
                 HashMap<String,FVal> env_pr2 = new HashMap<>(env);
                 env_pr2.put(
                     ((FVal_SYM)cdr[0]).uName,
-                    new FVal_FUN(args, cdr[cdr.length - 1])
+                    new FVal_FUN(args1, cdr[cdr.length - 1])
                 );
                 return eval_any(cdr[2], env_pr2);
             case 'i':
                 if (((FVal_BLN)eval_any(cdr[0], env)).u) return eval_any(cdr[1], env);
                 else return eval_any(cdr[2], env);
             case 'f':
-                // TODO `fun'
-                break;
+                String[] args2 = new String[cdr.length - 1];
+                for (int i = 0; i < args2.length; i++)
+                { args2[i] = ((FVal_SYM)(cdr[i + 1])).uName; }
+                return new FVal_FUN(args2, cdr[cdr.length - 1]);
         }
         if (!(car instanceof FVal_FUN)) throw new Error(
             String.format("Cannot apply type `%s'", car.getClass().getName())
