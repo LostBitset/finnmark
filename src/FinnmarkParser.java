@@ -54,7 +54,13 @@ public class FinnmarkParser {
     }
 
     private static FVal_STR parseString(String s) {
-        return null;
+        return new FVal_STR(
+            s
+                .substring(1, s.length() - 2)
+                .replaceAll("\\n", "\n")
+                .replaceAll("\\t", "\t")
+                .replaceAll("\\0", "\0")
+        );
     }
 
     private static FVal_FMS parseFormatted(String s) {
