@@ -1,26 +1,35 @@
+import java.util.AbstractMap;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 public class Evaluator {
     public RRegistry reg;
+
+    public static HashMap<String,FVal> defaultEnv = new HashMap<>(Map.ofEntries(
+        new AbstractMap.SimpleEntry<>("println", (FVal) new FVal_JFN(
+            x -> { System.out.println(((FVal_STR)(x[0])).u); return (FVal)(x[0]); }
+        ))
+    ));
 
     public Evaluator(RRegistry reg) {
         this.reg = reg;
     }
 
     public FVal eval_code(FVal_LST expr, HashMap<String,FVal> env) {
-        FVal car = null;
+        System.out.printf("Evaluating expr with car `%s'...\n", expr.u[0]);
+        FVal car = eval_any(expr.u[0], env);
         FVal[] cdr = new FVal[expr.u.length - 1];
-        for (int i = 0; i < expr.u.length; i++) {
-            if (i == 0) car = eval_any(expr.u[i], env);
-            else cdr[i - 1] = eval_any(expr.u[i], env);
+        for (int i = 1; i < expr.u.length; i++) {
+            cdr[i - 1] = expr.u[i];
         }
-        if (car == null) throw new Error("Cannot evaluate an empty list");
         if (car instanceof SpecialForm) switch (((SpecialForm)car).ch) {
             case 'c':
                 FVal result = eval_any(cdr[cdr.length - 1], env);
+                System.out.println(cdr[0]);
                 for (int i = cdr.length - 2; i > 0; i--) {
                     FVal_LST v = (FVal_LST)(cdr[i]);
+                    System.out.printf("v=%s\n", v);
                     FVal[] alt = new FVal[v.u.length + 1];
                     for (int j = 0; j < v.u.length; j++) {
                         alt[j] = v.u[j];
@@ -52,6 +61,12 @@ public class Evaluator {
                 { args2[i] = ((FVal_SYM)(cdr[i + 1])).uName; }
                 return new FVal_FUN(args2, cdr[cdr.length - 1]);
         }
+        for (int i = 0; i < cdr.length; i++) {
+            cdr[i] = eval_any(cdr[i], env);
+        }
+        if (car instanceof FVal_JFN) {
+            return ((FVal_JFN)car).lambda.apply(cdr);
+        }
         if (!(car instanceof FVal_FUN)) throw new Error(
             String.format("Cannot apply type `%s'", car.getClass().getName())
         );
@@ -69,7 +84,10 @@ public class Evaluator {
         if (expr.uName.equals("with-fn"))    return new SpecialForm('n');
         if (expr.uName.equals("if"))         return new SpecialForm('i');
         if (expr.uName.equals("fun"))        return new SpecialForm('f');
-        return env.get(expr.uName); 
+        if (!env.containsKey(expr.uName)) throw new Error(
+            String.format("Cannot find value for `%s'\n", expr.uName)
+        );
+        return env.get(expr.uName);
     }
 
     public FVal_STR eval_fstr(FVal_FMS expr, HashMap<String,FVal> env) {
