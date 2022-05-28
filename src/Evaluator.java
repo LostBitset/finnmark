@@ -12,7 +12,9 @@ public class Evaluator {
         ));
         this.defaultEnv.put("map", (FVal) new FVal_JFN(
             (x, env) -> {
-                FVal_LST innerList = (FVal_LST)(((FVal_QTD)(x[1])).inner);
+                FVal_LST innerList = (FVal_LST)(((FVal_QTD)(
+                    eval_any(x[1], env)
+                )).inner);
                 FVal[] res = new FVal[innerList.u.length];
                 for (int i = 0; i < innerList.u.length; i++) {
                     FVal[] appExpr = new FVal[2];
@@ -48,7 +50,13 @@ public class Evaluator {
                         for (FVal e : ((FVal_LST)(((FVal_QTD)(x[0])).inner)).u) {
                             if (a == ((FVal_IDX)e).u) toUnravel = true;
                         }
-                        if (toUnravel) return Stream.of(((FVal_LST)(((FVal_QTD)(x[a + 1])).inner)).u);
+                        if (toUnravel) {
+                            return Stream.of(
+                                ((FVal_LST)(((FVal_QTD)(
+                                    eval_any(x[a + 1], env)
+                                )).inner)).u
+                            );
+                        }
                         else return Stream.of(x[a + 1]);
                     })
                     .toArray(FVal[]::new);
@@ -107,6 +115,9 @@ public class Evaluator {
         }
         for (int i = 0; i < cdr.length; i++) {
             cdr[i] = eval_any(cdr[i], env);
+        }
+        if (car instanceof FVal_IDX) {
+            return ((FVal_LST)(((FVal_QTD)(cdr[0])).inner)).u[((FVal_IDX)car).u];
         }
         if (car instanceof FVal_JFN) {
             return ((FVal_JFN)car).lambda.apply(cdr, env);
