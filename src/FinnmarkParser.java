@@ -68,7 +68,8 @@ public class FinnmarkParser {
     private static FVal_STR parseString(String s) {
         return new FVal_STR(
             s
-                .substring(1, s.length() - 1)
+                .replaceAll("^[^']*'", "")
+                .replaceAll("'[^']*$", "")
                 .replaceAll("\\n", "\n")
                 .replaceAll("\\t", "\t")
         );
@@ -98,11 +99,11 @@ public class FinnmarkParser {
                         );
                         currBuf = new StringBuilder();
                         continue;
-                    case '(':
+                    case '('/*...)*/:
                         if (++nested == 1) continue;
                         else break;
-                    case ')':
-                        if (--nested == 1) continue;
+                    case /*(...*/')':
+                        if (nested-- == 1) continue;
                         else break;
                 }
             }

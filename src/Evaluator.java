@@ -1,15 +1,16 @@
-import java.util.AbstractMap;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Evaluator {
-    public HashMap<String,FVal> defaultEnv = new HashMap<>(Map.ofEntries(
-        new AbstractMap.SimpleEntry<>("println", (FVal) new FVal_JFN(
+    public HashMap<String,FVal> defaultEnv;
+    
+    public Evaluator() {
+        this.defaultEnv = new HashMap<>();
+        this.defaultEnv.put("println", (FVal) new FVal_JFN(
             (x, env) -> { System.out.println(((FVal_STR)(x[0])).u); return (FVal)(x[0]); }
-        )),
-        new AbstractMap.SimpleEntry<>("map", (FVal) new FVal_JFN(
+        ));
+        this.defaultEnv.put("map", (FVal) new FVal_JFN(
             (x, env) -> {
                 FVal_LST innerList = (FVal_LST)(((FVal_QTD)(x[1])).inner);
                 FVal[] res = new FVal[innerList.u.length];
@@ -21,8 +22,8 @@ public class Evaluator {
                 }
                 return new FVal_QTD(new FVal_LST(res));
             }
-        )),
-        new AbstractMap.SimpleEntry<>("fold", (FVal) new FVal_JFN(
+        ));
+        this.defaultEnv.put("fold", (FVal) new FVal_JFN(
             (x, env) -> {
                 // (fold (fun x a ...) init list)
                 FVal_LST innerList = (FVal_LST)(((FVal_QTD)(x[2])).inner);
@@ -36,8 +37,8 @@ public class Evaluator {
                 }
                 return res;
             }
-        )),
-        new AbstractMap.SimpleEntry<>("unravel", (FVal) new FVal_JFN(
+        ));
+        this.defaultEnv.put("unravel", (FVal) new FVal_JFN(
             (x, env) -> {
                 // (unravel idx-list ...)
                 FVal[] exprNew = IntStream.range(0, x.length - 1)
@@ -53,8 +54,12 @@ public class Evaluator {
                     .toArray(FVal[]::new);
                 return eval_code(new FVal_LST(exprNew), env);
             }
-        ))
-    ));
+        ));
+        this.defaultEnv.put("id", eval_any(
+            FinnmarkParser.parseExpr("(fun x x)"),
+            new HashMap<>()
+        ));
+    }
 
     public FVal eval_code(FVal_LST expr, HashMap<String,FVal> env) {
         System.out.printf("Evaluating expr with car `%s'...\n", expr.u[0]);
@@ -95,7 +100,7 @@ public class Evaluator {
             case 'f':
                 String[] args2 = new String[cdr.length - 1];
                 for (int i = 0; i < args2.length; i++)
-                { args2[i] = ((FVal_SYM)(cdr[i + 1])).uName; }
+                { args2[i] = ((FVal_SYM)(cdr[i])).uName; }
                 return new FVal_FUN(args2, cdr[cdr.length - 1]);
         }
         for (int i = 0; i < cdr.length; i++) {
