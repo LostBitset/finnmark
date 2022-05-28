@@ -44,11 +44,13 @@ public class Evaluator {
                     .mapToObj(Integer::valueOf)
                     .flatMap((Integer a) -> {
                         boolean toUnravel = false;
-                        for (FVal e : (FVal_QTD)(x[0]).inner) {
+                        for (FVal e : ((FVal_LST)(((FVal_QTD)(x[0])).inner)).u) {
                             if (a == ((FVal_IDX)e).u) toUnravel = true;
                         }
+                        if (toUnravel) return Stream.of(((FVal_LST)(((FVal_QTD)(x[a + 1])).inner)).u);
+                        else return Stream.of(x[a + 1]);
                     })
-                    .toArray();
+                    .toArray(FVal[]::new);
                 return eval_code(new FVal_LST(exprNew), env);
             }
         ))
