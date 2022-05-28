@@ -55,6 +55,8 @@ public class Evaluator {
                 return eval_code(new FVal_LST(exprNew), env);
             }
         ));
+        FVal[] nilList = new FVal[0];
+        this.defaultEnv.put("nil", (FVal) new FVal_QTD(new FVal_LST(nilList)));
         this.defaultEnv.put("id", eval_any(
             FinnmarkParser.parseExpr("(fun x x)"),
             new HashMap<>()
