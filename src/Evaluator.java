@@ -4,9 +4,22 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class Evaluator {
-    public static HashMap<String,FVal> defaultEnv = new HashMap<>(Map.ofEntries(
+    public HashMap<String,FVal> defaultEnv = new HashMap<>(Map.ofEntries(
         new AbstractMap.SimpleEntry<>("println", (FVal) new FVal_JFN(
-            x -> { System.out.println(((FVal_STR)(x[0])).u); return (FVal)(x[0]); }
+            (x, env) -> { System.out.println(((FVal_STR)(x[0])).u); return (FVal)(x[0]); }
+        )),
+        new AbstractMap.SimpleEntry<>("map", (FVal) new FVal_JFN(
+            (x, env) -> {
+                FVal_LST innerList = (FVal_LST)(((FVal_QTD)(x[1])).inner);
+                FVal[] res = new FVal[innerList.u.length];
+                for (int i = 0; i < innerList.u.length; i++) {
+                    FVal[] appExpr = new FVal[2];
+                    appExpr[0] = x[0];
+                    appExpr[1] = innerList.u[i];
+                    res[i] = eval_code(new FVal_LST(appExpr), env);
+                }
+                return new FVal_QTD(new FVal_LST(res));
+            }
         ))
     ));
 
@@ -56,7 +69,7 @@ public class Evaluator {
             cdr[i] = eval_any(cdr[i], env);
         }
         if (car instanceof FVal_JFN) {
-            return ((FVal_JFN)car).lambda.apply(cdr);
+            return ((FVal_JFN)car).lambda.apply(cdr, env);
         }
         if (!(car instanceof FVal_FUN)) throw new Error(
             String.format("Cannot apply type `%s'", car.getClass().getName())
@@ -96,10 +109,19 @@ public class Evaluator {
         );
     }
 
+    public FVal eval_unqt(FVal_UNQ expr, HashMap<String,FVal> env) {
+        if (expr.inner instanceof FVal_QTD) {
+            return ((FVal_QTD)(expr.inner)).inner;
+        } else {
+            return ((FVal_QTD)(eval_any(expr, env))).inner;
+        }
+    }
+
     public FVal eval_any(FVal expr, HashMap<String,FVal> env) {
         if (expr instanceof FVal_LST) return eval_code((FVal_LST)expr, env);
         if (expr instanceof FVal_SYM) return eval_symb((FVal_SYM)expr, env);
         if (expr instanceof FVal_FMS) return eval_fstr((FVal_FMS)expr, env);
+        if (expr instanceof FVal_UNQ) return eval_unqt((FVal_UNQ)expr, env);
         else return expr;
     }
 }

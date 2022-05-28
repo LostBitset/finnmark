@@ -1,7 +1,8 @@
-import java.util.function.Function;
+import java.util.HashMap;
+import java.util.function.BiFunction;
 
 public class FVal_JFN implements FVal {
-    public Function<FVal[],FVal> lambda;
+    public BiFunction<FVal[],HashMap<String,FVal>,FVal> lambda;
 
-    public FVal_JFN(Function<FVal[],FVal> lambda) { this.lambda = lambda; }
+    public FVal_JFN(BiFunction<FVal[],HashMap<String,FVal>,FVal> lambda) { this.lambda = lambda; }
 }
