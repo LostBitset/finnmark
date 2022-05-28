@@ -6,7 +6,7 @@
 <expr-value> ::= <list> | <quote> | <unquote> | <const> | <literal> | <symbol>
 <exprs> ::= "" | <expr> <exprs>
 <list> ::= "(" <exprs> ")"
-<quote> ::= "\" <expr-value>
+<quote> ::= "`" <expr-value>
 <unquote> ::= "," <expr-value>
 <const> ::= "##" <user-const> | "#" <lang-const>
 <user-const> ::= <VALIDSYMBOL>

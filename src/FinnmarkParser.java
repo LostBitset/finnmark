@@ -10,6 +10,10 @@ public class FinnmarkParser {
         switch (s.charAt(0)) {
             case '(':
                 return parseList(s);
+            case '`':
+                return new FVal_QTD(parseExpr(s.substring(1)));
+            case ',':
+                return new FVal_UNQ(parseExpr(s.substring(1)));
             case '~':
                 return parseFormatted(s);
             case '\'':

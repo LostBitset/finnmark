@@ -1,4 +1,5 @@
 (chain
-    (greet 'Oliver')
+    (map greet names)
+    (with names `('Ben' 'Oliver'))
     (with-fn greet name
         (println ~'Hello, %name%.')))
