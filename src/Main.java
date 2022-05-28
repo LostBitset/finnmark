@@ -14,11 +14,9 @@ public class Main {
             System.out.println("[RUN] Cannot find `main.fnn'");
             return;
         }
-        FVal code = FinnmarkParser.parseExpr(source); // Upcast
+        FVal code = FinnmarkParser.parseExpr(source);
         System.out.println(code);
-        RRegistry reg = new RRegistry();
-        /*PassiveCompiler compiler = new PassiveCompiler(reg);*/
-        Evaluator evaluator = new Evaluator(reg);
+        Evaluator evaluator = new Evaluator();
         System.out.println("[RUN] Starting...");
         FVal res = evaluator.eval_any(code, Evaluator.defaultEnv);
         System.out.println("[RUN] Completed.");

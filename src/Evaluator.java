@@ -4,17 +4,11 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 public class Evaluator {
-    public RRegistry reg;
-
     public static HashMap<String,FVal> defaultEnv = new HashMap<>(Map.ofEntries(
         new AbstractMap.SimpleEntry<>("println", (FVal) new FVal_JFN(
             x -> { System.out.println(((FVal_STR)(x[0])).u); return (FVal)(x[0]); }
         ))
     ));
-
-    public Evaluator(RRegistry reg) {
-        this.reg = reg;
-    }
 
     public FVal eval_code(FVal_LST expr, HashMap<String,FVal> env) {
         System.out.printf("Evaluating expr with car `%s'...\n", expr.u[0]);
