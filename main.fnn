@@ -1,5 +1,1 @@
-(chain
-    (unravel nil map greet (1a `(nil names)))
-    (with names `('Ben' 'Oliver'))
-    (with-fn greet name
-        (println ~'Hello, %name%.')))
+(println ((k 'ok') 'uh oh'))

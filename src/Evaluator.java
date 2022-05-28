@@ -69,6 +69,10 @@ public class Evaluator {
             FinnmarkParser.parseExpr("(fun x x)"),
             this.defaultEnv
         ));
+        this.defaultEnv.put("k", eval_any(
+            FinnmarkParser.parseExpr("(fun a (fun b a))"),
+            this.defaultEnv
+        ));
     }
 
     public FVal eval_code(FVal_LST expr, HashMap<String,FVal> env) {
@@ -130,6 +134,8 @@ public class Evaluator {
         for (int i = 0; i < fun.args.length; i++) {
             env_pr.put(fun.args[i], cdr[i]);
         }
+        System.out.println("body : " + fun.body);
+        System.out.println(env_pr);
         return eval_any(fun.body, env_pr);
     }
 
