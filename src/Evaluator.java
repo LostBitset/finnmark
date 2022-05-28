@@ -1,6 +1,7 @@
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Evaluator {
@@ -19,6 +20,36 @@ public class Evaluator {
                     res[i] = eval_code(new FVal_LST(appExpr), env);
                 }
                 return new FVal_QTD(new FVal_LST(res));
+            }
+        )),
+        new AbstractMap.SimpleEntry<>("fold", (FVal) new FVal_JFN(
+            (x, env) -> {
+                // (fold (fun x a ...) init list)
+                FVal_LST innerList = (FVal_LST)(((FVal_QTD)(x[2])).inner);
+                FVal res = x[1];
+                for (int i = 0; i < innerList.u.length; i++) {
+                    FVal[] appExpr = new FVal[3];
+                    appExpr[0] = x[0];
+                    appExpr[1] = innerList.u[i];
+                    appExpr[2] = res;
+                    res = eval_code(new FVal_LST(appExpr), env);
+                }
+                return res;
+            }
+        )),
+        new AbstractMap.SimpleEntry<>("unravel", (FVal) new FVal_JFN(
+            (x, env) -> {
+                // (unravel idx-list ...)
+                FVal[] exprNew = IntStream.range(0, x.length - 1)
+                    .mapToObj(Integer::valueOf)
+                    .flatMap((Integer a) -> {
+                        boolean toUnravel = false;
+                        for (FVal e : (FVal_QTD)(x[0]).inner) {
+                            if (a == ((FVal_IDX)e).u) toUnravel = true;
+                        }
+                    })
+                    .toArray();
+                return eval_code(new FVal_LST(exprNew), env);
             }
         ))
     ));
