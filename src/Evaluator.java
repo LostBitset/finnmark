@@ -25,33 +25,30 @@ public class Evaluator {
         }
         if (car instanceof SpecialForm) switch (((SpecialForm)car).ch) {
             case 'c':
-                FVal result = eval_any(cdr[cdr.length - 1], env);
-                System.out.println(cdr[0]);
-                for (int i = cdr.length - 2; i > 0; i--) {
-                    FVal_LST v = (FVal_LST)(cdr[i]);
-                    System.out.printf("v=%s\n", v);
-                    FVal[] alt = new FVal[v.u.length + 1];
-                    for (int j = 0; j < v.u.length; j++) {
-                        alt[j] = v.u[j];
-                    }
-                    alt[v.u.length] = result;
-                    result = eval_code(new FVal_LST(alt), env);
+                FVal curr = cdr[0];
+                for (int i = 1; i < cdr.length; i++) {
+                    FVal_LST ls = (FVal_LST) cdr[i];
+                    FVal[] nextAsArray = new FVal[ls.u.length + 1];
+                    for (int j = 0; j < ls.u.length; j++) nextAsArray[j] = ls.u[j];
+                    nextAsArray[ls.u.length] = curr;
+                    curr = new FVal_LST(nextAsArray);
                 }
-                return result;
+                return eval_any(curr, env);
             case 'w':
                 HashMap<String,FVal> env_pr1 = new HashMap<>(env);
                 env_pr1.put(((FVal_SYM)cdr[0]).uName, eval_any(cdr[1], env));
                 return eval_any(cdr[2], env_pr1);
             case 'n':
-                String[] args1 = new String[cdr.length - 2];
-                for (int i = 0; i < args1.length; i++)
-                { args1[i] = ((FVal_SYM)(cdr[i + 1])).uName; }
+                String[] args1 = new String[cdr.length - 3];
+                for (int i = 0; i < args1.length; i++) {
+                    args1[i] = ((FVal_SYM)(cdr[i + 1])).uName;
+                }
                 HashMap<String,FVal> env_pr2 = new HashMap<>(env);
                 env_pr2.put(
                     ((FVal_SYM)cdr[0]).uName,
-                    new FVal_FUN(args1, cdr[cdr.length - 1])
+                    new FVal_FUN(args1, cdr[cdr.length - 2])
                 );
-                return eval_any(cdr[2], env_pr2);
+                return eval_any(cdr[cdr.length - 1], env_pr2);
             case 'i':
                 if (((FVal_BLN)eval_any(cdr[0], env)).u) return eval_any(cdr[1], env);
                 else return eval_any(cdr[2], env);
@@ -96,6 +93,10 @@ public class Evaluator {
                 expr.u,
                 Stream.of(expr.refs)
                     .map(env::get)
+                    .map(x -> {
+                        if (x instanceof FVal_STR) return ((FVal_STR)x).u;
+                        else return x.toString();
+                    })
                     .toArray()
             )
         );
