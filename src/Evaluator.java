@@ -243,6 +243,79 @@ public class Evaluator {
                 );
             }
         ));
+        this.defaultEnv.put("zero-p", (FVal) new FVal_JFN(
+            1,
+            (x, env) -> {
+                FVal_NUM num = (FVal_NUM) eval_any(x[0], env);
+                return new FVal_BLN(num.u == 0.0);
+            }
+        ));
+        this.defaultEnv.put("=", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                if (x[0].getClass() != x[1].getClass()) return new FVal_BLN(false);
+                else if (x[0] instanceof FVal_BLN) return new FVal_BLN(((FVal_BLN)(x[0])).u == ((FVal_BLN)(x[1])).u);
+                else if (x[0] instanceof FVal_IDX) return new FVal_BLN(((FVal_IDX)(x[0])).u == ((FVal_IDX)(x[1])).u);
+                else if (x[0] instanceof FVal_STR) return new FVal_BLN(((FVal_STR)(x[0])).u.equals(((FVal_STR)(x[1])).u));
+                else throw new Error(
+                    String.format("Cannot compare type `%s'", x[0].getClass().getName())
+                );
+            }
+        ));
+        this.defaultEnv.put(">=", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                if (x[0].getClass() != x[1].getClass()) return new FVal_BLN(false);
+                else if (x[0] instanceof FVal_NUM) return new FVal_BLN(((FVal_NUM)(x[0])).u >= ((FVal_NUM)(x[1])).u);
+                else if (x[0] instanceof FVal_IDX) return new FVal_BLN(((FVal_IDX)(x[0])).u >= ((FVal_IDX)(x[1])).u);
+                else throw new Error(
+                    String.format("Cannot compare type `%s'", x[0].getClass().getName())
+                );
+            }
+        ));
+        this.defaultEnv.put("<=", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                if (x[0].getClass() != x[1].getClass()) return new FVal_BLN(false);
+                else if (x[0] instanceof FVal_NUM) return new FVal_BLN(((FVal_NUM)(x[0])).u <= ((FVal_NUM)(x[1])).u);
+                else if (x[0] instanceof FVal_IDX) return new FVal_BLN(((FVal_IDX)(x[0])).u <= ((FVal_IDX)(x[1])).u);
+                else throw new Error(
+                    String.format("Cannot compare type `%s'", x[0].getClass().getName())
+                );
+            }
+        ));
+        this.defaultEnv.put(">", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                if (x[0].getClass() != x[1].getClass()) return new FVal_BLN(false);
+                else if (x[0] instanceof FVal_NUM) return new FVal_BLN(((FVal_NUM)(x[0])).u > ((FVal_NUM)(x[1])).u);
+                else if (x[0] instanceof FVal_IDX) return new FVal_BLN(((FVal_IDX)(x[0])).u > ((FVal_IDX)(x[1])).u);
+                else throw new Error(
+                    String.format("Cannot compare type `%s'", x[0].getClass().getName())
+                );
+            }
+        ));
+        this.defaultEnv.put("<", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                if (x[0].getClass() != x[1].getClass()) return new FVal_BLN(false);
+                else if (x[0] instanceof FVal_NUM) return new FVal_BLN(((FVal_NUM)(x[0])).u < ((FVal_NUM)(x[1])).u);
+                else if (x[0] instanceof FVal_IDX) return new FVal_BLN(((FVal_IDX)(x[0])).u < ((FVal_IDX)(x[1])).u);
+                else throw new Error(
+                    String.format("Cannot compare type `%s'", x[0].getClass().getName())
+                );
+            }
+        ));
     }
 
     public FVal eval_code(FVal_LST expr, HashMap<String,FVal> env) {
