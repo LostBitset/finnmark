@@ -19,7 +19,7 @@ public class Maze {
             return;
         }
         FVal code = FinnmarkParser.parseExpr(source);
-        System.out.println(code);
+        //System.out.println(code);
         Evaluator evaluator = new Evaluator();
         FVal[] args = new FVal[3];
         args[0] = new FVal_IDX(startR);
