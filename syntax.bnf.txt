@@ -11,9 +11,9 @@
 <const> ::= "##" <user-const> | "#" <lang-const>
 <user-const> ::= <VALIDSYMBOL>
 <lang-const> ::= "t" | "f" | "nil"
-<literal> ::= <dec-literal> | <dec-literal> "a" | <bin-literal> | <bin-literal> "a" | <str-literal>
+<literal> ::= <dec-literal> | <dec-literal> "a" | <bin-literal> "a" | <str-literal>
 <dec-literal> ::= "-" <dec-literal> | "0"..."9" | "0"..."9" <dec-literal>
-<bin-literal> ::= ":" <bin-literal-value>
+<bin-literal> ::= "$" <bin-literal-value>
 <bin-literal-value> ::= "0" | "0" <bin-literal-value> | "1" | "1" <bin-literal-value>
 <str-literal> ::= "'" <str-contents> "'" | "~" "'" <str-contents> "'"
 <str-contents> ::= "" | <str-unit> <str-contents>

@@ -10,6 +10,27 @@ public class Evaluator {
         this.defaultEnv.put("println", (FVal) new FVal_JFN(
             (x, env) -> { System.out.println(((FVal_STR)(x[0])).u); return (FVal)(x[0]); }
         ));
+        this.defaultEnv.put(":", (FVal) new FVal_JFN(
+            (x, env) -> {
+                FVal lstE = eval_any(x[1], env);
+                FVal_LST lst = (FVal_LST)(((FVal_QTD)lstE).inner);
+                FVal[] arr = lst.u;
+                FVal[] arr_pr = new FVal[lst.u.length + 1];
+                arr_pr[0] = eval_any(x[0], env);
+                for (int i = 1; i < arr_pr.length; i++) arr_pr[i] = arr[i - 1];
+                return new FVal_QTD(new FVal_LST(arr_pr));
+            }
+        ));
+        this.defaultEnv.put("rev", (FVal) new FVal_JFN(
+            (x, env) -> {
+                FVal lstE = eval_any(x[0], env);
+                FVal_LST lst = (FVal_LST)(((FVal_QTD)lstE).inner);
+                FVal[] arr = lst.u;
+                FVal[] arr_pr = new FVal[lst.u.length];
+                for (int i = 0; i < arr_pr.length; i++) arr_pr[i] = arr[arr.length - i - 1];
+                return new FVal_QTD(new FVal_LST(arr_pr));
+            }
+        ));
         this.defaultEnv.put("map", (FVal) new FVal_JFN(
             (x, env) -> {
                 FVal_LST innerList = (FVal_LST)(((FVal_QTD)(

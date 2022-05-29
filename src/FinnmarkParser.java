@@ -18,7 +18,7 @@ public class FinnmarkParser {
                 return parseFormatted(s);
             case '\'':
                 return parseString(s);
-            case ':':
+            case '$':
                 if (s.charAt(s.length() - 1) == 'a') {
                     return asIdx(readBinInt(
                         s.substring(1, s.length() - 2)
