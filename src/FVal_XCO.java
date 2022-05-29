@@ -12,19 +12,23 @@ public class FVal_XCO implements FVal {
         this(car, idxObj.u);
     }
 
-    public FVal introduce(FVal[] next) {
+    public FVal introduce(FVal[] next, Evaluator evaluator) {
         boolean completed = false;
-        if (false);
-        else if (this.fill == null) this.fill = next;
+        if (this.fill == null) this.fill = next;
         else completed = true;
         if (completed) {
             return new FVal_JFN(
                 (x, env) -> {
-                    FVal[] args = new FVal[this.fill.length + 1];
-                    for (int i = 0, iF = 0; i < this.fill.length + 1; i++) {
-                        //
+                    FVal[] res = new FVal[this.fill.length + 2];
+                    res[0] = evaluator.eval_any(this.car, env);
+                    for (int i = 1, iF = 1; i < this.fill.length + 1; i++) {
+                        if (i == this.idx) {
+                            res[i] = evaluator.eval_any(x[0], env);
+                        } else {
+                            res[i] = evaluator.eval_any(this.fill[iF], env);
+                        }
                     }
-                    return eval_any()
+                    return evaluator.eval_code(new FVal_LST(res), env);
                 }
             );
         } else {

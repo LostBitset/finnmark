@@ -153,7 +153,7 @@ public class Evaluator {
             return ((FVal_JFN)car).lambda.apply(cdr, env);
         }
         if (car instanceof FVal_XCO) {
-            return ((FVal_XCO)car).introduce(cdr);
+            return ((FVal_XCO)car).introduce(cdr, this);
         }
         if (!(car instanceof FVal_FUN)) throw new Error(
             String.format("Cannot apply type `%s'", car.getClass().getName())
