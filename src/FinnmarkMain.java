@@ -2,7 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class Main {
+public class FinnmarkMain {
     public static void main(String[] args) {
         System.out.printf(
             "[RUN] Looking for `main.fnn' in `%s'...\n",

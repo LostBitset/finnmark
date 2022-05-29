@@ -8,9 +8,11 @@ public class Evaluator {
     public Evaluator() {
         this.defaultEnv = new HashMap<>();
         this.defaultEnv.put("println", (FVal) new FVal_JFN(
+            1,
             (x, env) -> { System.out.println(((FVal_STR)(x[0])).u); return (FVal)(x[0]); }
         ));
         this.defaultEnv.put(":", (FVal) new FVal_JFN(
+            2,
             (x, env) -> {
                 FVal lstE = eval_any(x[1], env);
                 FVal_LST lst = (FVal_LST)(((FVal_QTD)lstE).inner);
@@ -22,6 +24,7 @@ public class Evaluator {
             }
         ));
         this.defaultEnv.put("rev", (FVal) new FVal_JFN(
+            1,
             (x, env) -> {
                 FVal lstE = eval_any(x[0], env);
                 FVal_LST lst = (FVal_LST)(((FVal_QTD)lstE).inner);
@@ -32,6 +35,7 @@ public class Evaluator {
             }
         ));
         this.defaultEnv.put("map", (FVal) new FVal_JFN(
+            2,
             (x, env) -> {
                 FVal_LST innerList = (FVal_LST)(((FVal_QTD)(
                     eval_any(x[1], env)
@@ -47,6 +51,7 @@ public class Evaluator {
             }
         ));
         this.defaultEnv.put("fold", (FVal) new FVal_JFN(
+            3,
             (x, env) -> {
                 // (fold (fun x a ...) init list)
                 FVal_LST innerList = (FVal_LST)(((FVal_QTD)(x[2])).inner);
@@ -82,6 +87,30 @@ public class Evaluator {
                     })
                     .toArray(FVal[]::new);
                 return eval_code(new FVal_LST(exprNew), env);
+            }
+        ));
+        this.defaultEnv.put("arity", (FVal) new FVal_JFN(
+            1,
+            (x, env) -> {
+                FVal fun = eval_any(x[0], env);
+                if (fun instanceof FVal_JFN) {
+                    Integer jfnArity = ((FVal_JFN)fun).arity;
+                    if (jfnArity == null) throw new Error(
+                        String.format("No specified arity for %s", fun)
+                    );
+                    return new FVal_IDX(
+                        jfnArity
+                    );
+                }
+                else if (fun instanceof FVal_FUN) return new FVal_IDX(
+                    ((FVal_FUN)fun).args.length
+                );
+                else if (fun instanceof FVal_IDX) return new FVal_IDX(
+                    1
+                );
+                else throw new Error(
+                    String.format("Arity not given for type `%s'", x.getClass().getName())
+                );
             }
         ));
         FVal[] nilList = new FVal[0];
@@ -121,6 +150,7 @@ public class Evaluator {
             }
         ));
         this.defaultEnv.put("-", (FVal) new FVal_JFN(
+            2,
             (xE, env) -> {
                 FVal[] x = new FVal[xE.length];
                 for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
@@ -176,6 +206,7 @@ public class Evaluator {
             }
         ));
         this.defaultEnv.put("/", (FVal) new FVal_JFN(
+            2,
             (xE, env) -> {
                 FVal[] x = new FVal[xE.length];
                 for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
@@ -203,6 +234,7 @@ public class Evaluator {
             }
         ));
         this.defaultEnv.put("//", (FVal) new FVal_JFN(
+            2,
             (xE, env) -> {
                 FVal[] x = new FVal[xE.length];
                 for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
@@ -214,7 +246,7 @@ public class Evaluator {
     }
 
     public FVal eval_code(FVal_LST expr, HashMap<String,FVal> env) {
-        System.out.printf("Evaluating expr with car `%s'...\n", expr.u[0]);
+        //System.out.printf("Evaluating expr with car `%s'...\n", expr.u[0]);
         FVal car = eval_any(expr.u[0], env);
         FVal[] cdr = new FVal[expr.u.length - 1];
         for (int i = 1; i < expr.u.length; i++) {
