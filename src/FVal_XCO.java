@@ -1,3 +1,6 @@
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 public class FVal_XCO implements FVal {
     public FVal car;
     public int idx;
@@ -12,27 +15,23 @@ public class FVal_XCO implements FVal {
         this(car, idxObj.u);
     }
 
-    public FVal introduce(FVal[] next, Evaluator evaluator) {
-        boolean completed = false;
-        if (this.fill == null) this.fill = next;
-        else completed = true;
-        if (completed) {
-            return new FVal_JFN(
-                (x, env) -> {
-                    FVal[] res = new FVal[this.fill.length + 2];
-                    res[0] = evaluator.eval_any(this.car, env);
-                    for (int i = 1, iF = 1; i < this.fill.length + 1; i++) {
-                        if (i == this.idx) {
-                            res[i] = evaluator.eval_any(x[0], env);
-                        } else {
-                            res[i] = evaluator.eval_any(this.fill[iF], env);
-                        }
+    public FVal introduce(FVal[] fill, Evaluator evaluator) {
+        this.fill = fill;
+        return new FVal_JFN(
+            (x, env) -> {
+                FVal[] res = new FVal[this.fill.length + 2];
+                res[0] = evaluator.eval_any(this.car, env);
+                for (int i = 0, iF = 0; i < this.fill.length + 1; i++) {
+                    if (i == this.idx) {
+                        res[i + 1] = evaluator.eval_any(x[0], env);
+                    } else {
+                        res[i + 1] = evaluator.eval_any(this.fill[iF], env);
+                        iF++;
                     }
-                    return evaluator.eval_code(new FVal_LST(res), env);
                 }
-            );
-        } else {
-            return this;
-        }
+                System.out.println(Stream.of(res).map(String::valueOf).collect(Collectors.joining(" ", "res<array>=(", ")")));
+                return evaluator.eval_code(new FVal_LST(res), env);
+            }
+        );
     }
 }
