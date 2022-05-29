@@ -6,7 +6,9 @@ public class FinnmarkParser {
             .trim()
             .replaceAll("\n", " ")
             .replaceAll("\t", " ")
-            .replaceAll(" +", " ");
+            .replaceAll(" +", " ")
+            .replaceAll("\\( ", "(")
+            .replaceAll(" \\)", ")");
         switch (s.charAt(0)) {
             case '(':
                 return parseList(s);

@@ -166,6 +166,16 @@ public class Evaluator {
             FinnmarkParser.parseExpr("(fun x x)"),
             this.defaultEnv
         ));
+        this.defaultEnv.put("mod", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                return new FVal_IDX(
+                    ((FVal_IDX)(x[0])).u % ((FVal_IDX)(x[1])).u
+                );
+            }
+        ));
         this.defaultEnv.put("+", (FVal) new FVal_JFN(
             (xE, env) -> {
                 FVal[] x = new FVal[xE.length];
