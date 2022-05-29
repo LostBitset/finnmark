@@ -29,7 +29,6 @@ public class FVal_XCO implements FVal {
                         iF++;
                     }
                 }
-                System.out.println(Stream.of(res).map(String::valueOf).collect(Collectors.joining(" ", "res<array>=(", ")")));
                 return evaluator.eval_code(new FVal_LST(res), env);
             }
         );

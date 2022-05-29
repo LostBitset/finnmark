@@ -163,13 +163,10 @@ public class Evaluator {
         for (int i = 0; i < fun.args.length; i++) {
             env_pr.put(fun.args[i], cdr[i]);
         }
-        System.out.println("body : " + fun.body);
-        System.out.println(env_pr);
         return eval_any(fun.body, env_pr);
     }
 
     public FVal eval_symb(FVal_SYM expr, HashMap<String,FVal> env) {
-        System.out.println("env : " + env);
         if (expr.uName.equals("chain"))     return new SpecialForm('c');
         if (expr.uName.equals("with"))      return new SpecialForm('w');
         if (expr.uName.equals("with-fn"))   return new SpecialForm('n');
