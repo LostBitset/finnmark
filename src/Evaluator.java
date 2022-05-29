@@ -69,9 +69,33 @@ public class Evaluator {
             FinnmarkParser.parseExpr("(fun x x)"),
             this.defaultEnv
         ));
-        this.defaultEnv.put("k", eval_any(
-            FinnmarkParser.parseExpr("(fun a (fun b a))"),
-            this.defaultEnv
+        this.defaultEnv.put("+", (FVal) new FVal_JFN(
+            (x, env) -> {
+                double sumNum = 0.0;
+                int sumIdx = 0;
+                int numTypeMask = 0b00;
+                for (int i = 0; i < x.length; i++) {
+                    if (x[i] instanceof FVal_IDX) {
+                        sumIdx += ((FVal_IDX)(x[i])).u;
+                        numTypeMask |= 0b10;
+                    } else {
+                        sumNum += ((FVal_NUM)(x[i])).u;
+                        numTypeMask |= 0b01;
+                    }
+                }
+                switch (numTypeMask) {
+                    case 0b00:
+                        throw new Error("No +/0 (could not pick type)");
+                    case 0b01:
+                        return (FVal) new FVal_NUM(sumNum);
+                    case 0b10:
+                        return (FVal) new FVal_IDX(sumIdx);
+                    case 0b11:
+                        throw new Error("Cannot add types NUM and IDX");
+                    default:
+                        throw new Error("unreachable");
+                }
+            }
         ));
     }
 
@@ -116,6 +140,8 @@ public class Evaluator {
                 for (int i = 0; i < args2.length; i++)
                 { args2[i] = ((FVal_SYM)(cdr[i])).uName; }
                 return new FVal_FUN(args2, cdr[cdr.length - 1]);
+            case '-':
+                return new FVal_XCO(cdr[1], (FVal_IDX)(cdr[0]));
         }
         for (int i = 0; i < cdr.length; i++) {
             cdr[i] = eval_any(cdr[i], env);
@@ -125,6 +151,9 @@ public class Evaluator {
         }
         if (car instanceof FVal_JFN) {
             return ((FVal_JFN)car).lambda.apply(cdr, env);
+        }
+        if (car instanceof FVal_XCO) {
+            return ((FVal_XCO)car).introduce(cdr);
         }
         if (!(car instanceof FVal_FUN)) throw new Error(
             String.format("Cannot apply type `%s'", car.getClass().getName())
@@ -140,11 +169,13 @@ public class Evaluator {
     }
 
     public FVal eval_symb(FVal_SYM expr, HashMap<String,FVal> env) {
-        if (expr.uName.equals("chain"))      return new SpecialForm('c');
-        if (expr.uName.equals("with"))       return new SpecialForm('w');
-        if (expr.uName.equals("with-fn"))    return new SpecialForm('n');
-        if (expr.uName.equals("if"))         return new SpecialForm('i');
-        if (expr.uName.equals("fun"))        return new SpecialForm('f');
+        System.out.println("env : " + env);
+        if (expr.uName.equals("chain"))     return new SpecialForm('c');
+        if (expr.uName.equals("with"))      return new SpecialForm('w');
+        if (expr.uName.equals("with-fn"))   return new SpecialForm('n');
+        if (expr.uName.equals("if"))        return new SpecialForm('i');
+        if (expr.uName.equals("fun"))       return new SpecialForm('f');
+        if (expr.uName.equals("co"))        return new SpecialForm('-');
         if (!env.containsKey(expr.uName)) throw new Error(
             String.format("Cannot find value for `%s'\n", expr.uName)
         );
