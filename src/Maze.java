@@ -24,7 +24,7 @@ public class Maze {
         FVal[] args = new FVal[3];
         args[0] = new FVal_IDX(startR);
         args[1] = new FVal_IDX(startC);
-        args[2] = new FVal_NUM(startA);
+        args[2] = new FVal_IDX((int)startA);
         FVal maze = fnnMaze();
         HashMap<String,FVal> env = new HashMap<>(evaluator.defaultEnv);
         env.put("maze", maze);

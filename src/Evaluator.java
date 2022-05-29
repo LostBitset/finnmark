@@ -9,7 +9,32 @@ public class Evaluator {
         this.defaultEnv = new HashMap<>();
         this.defaultEnv.put("println", (FVal) new FVal_JFN(
             1,
-            (x, env) -> { System.out.println(((FVal_STR)(x[0])).u); return (FVal)(x[0]); }
+            (x, env) -> {
+                FVal e = eval_any(x[0], env);
+                System.out.println(((FVal_STR)(
+                    e
+                )).u);
+                return (FVal)(e);
+            }
+        ));
+        this.defaultEnv.put("show", (FVal) new FVal_JFN(
+            1,
+            (x, env) -> {
+                FVal e = eval_any(x[0], env);
+                System.out.println(
+                    e.toString()
+                );
+                return (FVal)(e);
+            }
+        ));
+        this.defaultEnv.put("repr", (FVal) new FVal_JFN(
+            1,
+            (x, env) -> {
+                FVal e = eval_any(x[0], env);
+                return new FVal_STR(
+                    e.toString()
+                );
+            }
         ));
         this.defaultEnv.put("#t", (FVal) new FVal_BLN(true));
         this.defaultEnv.put("#f", (FVal) new FVal_BLN(false));
@@ -411,7 +436,47 @@ public class Evaluator {
                 } else {
                     throw new Error(
                         String.format(
-                            "Cannot bitwise and types `%s' and `%s'",
+                            "Cannot bitwise or types `%s' and `%s'",
+                            x[0].getClass().getName(),
+                            x[1].getClass().getName()
+                        )
+                    );
+                }
+            }
+        ));
+        this.defaultEnv.put("<<", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                if ((x[0] instanceof FVal_IDX) && (x[1] instanceof FVal_IDX)) {
+                    return new FVal_IDX(
+                        ((FVal_IDX)(x[0])).u << ((FVal_IDX)(x[1])).u
+                    );
+                } else {
+                    throw new Error(
+                        String.format(
+                            "Cannot lshift types `%s' and `%s'",
+                            x[0].getClass().getName(),
+                            x[1].getClass().getName()
+                        )
+                    );
+                }
+            }
+        ));
+        this.defaultEnv.put(">>", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                if ((x[0] instanceof FVal_IDX) && (x[1] instanceof FVal_IDX)) {
+                    return new FVal_IDX(
+                        ((FVal_IDX)(x[0])).u | ((FVal_IDX)(x[1])).u
+                    );
+                } else {
+                    throw new Error(
+                        String.format(
+                            "Cannot rshift types `%s' and `%s'",
                             x[0].getClass().getName(),
                             x[1].getClass().getName()
                         )

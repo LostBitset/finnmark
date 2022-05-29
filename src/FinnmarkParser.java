@@ -21,7 +21,7 @@ public class FinnmarkParser {
             case '$':
                 if (s.charAt(s.length() - 1) == 'a') {
                     return asIdx(readBinInt(
-                        s.substring(1, s.length() - 2)
+                        s.substring(1, s.length() - 1)
                     ));
                 } else {
                     throw new Error("Binary literals must be of the index type");

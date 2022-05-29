@@ -1,1 +1,30 @@
-(println 'TODO')
+(chain
+    (show (map wall-p `(start `(0a 0a) end)))
+    (with-fn solve steps avoid
+        nil)
+    (with-fn adj pos
+        (adj-positions pos)
+        (map wall-p)
+        (map-idx
+            (fun x i
+                (or x (= i idx-backtracking))))
+        (with idx-backtracking
+            (backtracking-idx (2a pos))))
+    (with backtracking-idx angle
+        (chain nil
+            (if (= angle 90a) 0a)
+            (if (= angle 180a) 1a)
+            (if (= angle -90a) 2a)
+            (if (= angle 0a) 3a)))
+    (with-fn adj-positions pos
+        `(  `((-- (0a pos)) (1a pos))
+            `((0a pos) (++ (1a pos)))
+            `((++ (0a pos)) (1a pos))
+            `((0a pos) (-- (1a pos)))))
+    (with-fn wall-p pos
+        (chain
+            (= (& row mask) 0a)
+            (not)
+            (with mask (<< $1a (++ (1a pos))))
+            (with row ((0a pos) maze))))
+    (with end `(15a 28a)))

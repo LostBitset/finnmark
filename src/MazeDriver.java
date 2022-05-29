@@ -13,7 +13,7 @@ public class MazeDriver {
          "X XXXXXXXXXXXXX      XXX   XXX",
          "X   XXXXXXXXXXXXX    XXXXX XXX",
          "XXX XXXXXXXXXXXXX    XXXXX XXX",
-         "XXX          XXXXX      XXXXXXX",
+         "XXX          XXXXX     XXXXXXX",
          "XXX XXXXXXXX XXXXXXXXX XXXXXXX",
          "XXX XXXXXXXX XXXXXXXXX XXXXXXX",
          "XXX     XXXX XXXXXXXXX        ",
