@@ -42,6 +42,22 @@ public class Evaluator {
             FinnmarkParser.parseExpr("(fun x (if x #f #t))"),
             this.defaultEnv
         ));
+        this.defaultEnv.put("and", eval_any(
+            FinnmarkParser.parseExpr("(fun a b (if a b #f))"),
+            this.defaultEnv
+        ));
+        this.defaultEnv.put("or", eval_any(
+            FinnmarkParser.parseExpr("(fun a b (if a #t b))"),
+            this.defaultEnv
+        ));
+        this.defaultEnv.put("nand", eval_any(
+            FinnmarkParser.parseExpr("(fun a b (not (and a b)))"),
+            this.defaultEnv
+        ));
+        this.defaultEnv.put("nor", eval_any(
+            FinnmarkParser.parseExpr("(fun a b (not (or a b)))"),
+            this.defaultEnv
+        ));
         this.defaultEnv.put(":", (FVal) new FVal_JFN(
             2,
             (x, env) -> {
