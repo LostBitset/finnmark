@@ -97,6 +97,24 @@ public class Evaluator {
                 return new FVal_QTD(new FVal_LST(res));
             }
         ));
+        this.defaultEnv.put("map-idx", (FVal) new FVal_JFN(
+            2,
+            (x, env) -> {
+                // (map-idx (fun x i ...) lst)
+                FVal_LST innerList = (FVal_LST)(((FVal_QTD)(
+                    eval_any(x[1], env)
+                )).inner);
+                FVal[] res = new FVal[innerList.u.length];
+                for (int i = 0; i < innerList.u.length; i++) {
+                    FVal[] appExpr = new FVal[3];
+                    appExpr[0] = x[0];
+                    appExpr[1] = innerList.u[i];
+                    appExpr[2] = new FVal_IDX(i);
+                    res[i] = eval_code(new FVal_LST(appExpr), env);
+                }
+                return new FVal_QTD(new FVal_LST(res));
+            }
+        ));
         this.defaultEnv.put("fold", (FVal) new FVal_JFN(
             3,
             (x, env) -> {
@@ -569,7 +587,11 @@ public class Evaluator {
             return ((FVal_XCO)car).introduce(cdr, this, env);
         }
         if (!(car instanceof FVal_FUN)) throw new Error(
-            String.format("Cannot apply type `%s'", car.getClass().getName())
+            String.format(
+                "Cannot apply type `%s' (value=%s)",
+                car.getClass().getName(),
+                car.toString()
+            )
         );
         FVal_FUN fun = (FVal_FUN) car;
         HashMap<String,FVal> env_pr = new HashMap<>(env);

@@ -1,5 +1,5 @@
 (chain
-    (show (map wall-p `(start `(0a 0a) end)))
+    (show (adj end))
     (with-fn solve steps avoid
         nil)
     (with-fn adj pos
@@ -10,7 +10,7 @@
                 (fun x i
                     (or x (= i idx-backtracking))))
             (with idx-backtracking
-                (chain pos (2a) (+ 2a) (mod 3)))))
+                (chain pos (2a) (+ 2a) (mod 3a)))))
     (with-fn adj-positions pos
         `(
             `((-- (0a pos)) (1a pos))
@@ -23,4 +23,4 @@
             (not)
             (with mask (<< $1a (++ (1a pos))))
             (with row ((0a pos) maze))))
-    (with end `(15a 28a)))
+    (with end `(15a 28a 1a)))
