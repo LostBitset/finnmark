@@ -70,7 +70,9 @@ public class Evaluator {
             this.defaultEnv
         ));
         this.defaultEnv.put("+", (FVal) new FVal_JFN(
-            (x, env) -> {
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
                 double sumNum = 0.0;
                 int sumIdx = 0;
                 int numTypeMask = 0b00;
@@ -91,10 +93,101 @@ public class Evaluator {
                     case 0b10:
                         return (FVal) new FVal_IDX(sumIdx);
                     case 0b11:
-                        throw new Error("Cannot add types NUM and IDX");
+                        throw new Error("Cannot calc NUM + IDX");
                     default:
                         throw new Error("unreachable");
                 }
+            }
+        ));
+        this.defaultEnv.put("-", (FVal) new FVal_JFN(
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                int numTypeMask = 0b00;
+                if (x[0] instanceof FVal_IDX) numTypeMask |= 0b10;
+                if (x[1] instanceof FVal_IDX) numTypeMask |= 0b01;
+                switch (numTypeMask) {
+                    case 0b00:
+                        return new FVal_NUM(
+                            ((FVal_NUM)(x[0])).u - ((FVal_NUM)(x[1])).u
+                        );
+                    case 0b01:
+                        throw new Error("Cannot calc NUM - IDX");
+                    case 0b10:
+                        throw new Error("Cannot calc IDX - NUM");
+                    case 0b11:
+                        return new FVal_IDX(
+                            ((FVal_IDX)(x[0])).u - ((FVal_IDX)(x[1])).u
+                        );
+                    default:
+                        throw new Error("unreachable");
+                }
+            }
+        ));
+        this.defaultEnv.put("*", (FVal) new FVal_JFN(
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                double sumNum = 0.0;
+                int sumIdx = 0;
+                int numTypeMask = 0b00;
+                for (int i = 0; i < x.length; i++) {
+                    if (x[i] instanceof FVal_IDX) {
+                        sumIdx *= ((FVal_IDX)(x[i])).u;
+                        numTypeMask |= 0b10;
+                    } else {
+                        sumNum *= ((FVal_NUM)(x[i])).u;
+                        numTypeMask |= 0b01;
+                    }
+                }
+                switch (numTypeMask) {
+                    case 0b00:
+                        throw new Error("No */0 (could not pick type)");
+                    case 0b01:
+                        return (FVal) new FVal_NUM(sumNum);
+                    case 0b10:
+                        return (FVal) new FVal_IDX(sumIdx);
+                    case 0b11:
+                        return (FVal) new FVal_NUM(sumNum * sumIdx);
+                    default:
+                        throw new Error("unreachable");
+                }
+            }
+        ));
+        this.defaultEnv.put("/", (FVal) new FVal_JFN(
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                int numTypeMask = 0b00;
+                if (x[0] instanceof FVal_IDX) numTypeMask |= 0b10;
+                if (x[1] instanceof FVal_IDX) numTypeMask |= 0b01;
+                switch (numTypeMask) {
+                    case 0b00:
+                        return new FVal_NUM(
+                            ((FVal_NUM)(x[0])).u / ((FVal_NUM)(x[1])).u
+                        );
+                    case 0b01:
+                        return new FVal_NUM(
+                            ((FVal_NUM)(x[0])).u / ((FVal_IDX)(x[1])).u
+                        );
+                    case 0b10:
+                        return new FVal_NUM(
+                            ((FVal_IDX)(x[0])).u / ((FVal_NUM)(x[1])).u
+                        );
+                    case 0b11:
+                        throw new Error("Cannot calc IDX / IDX (not closed)");
+                    default:
+                        throw new Error("unreachable");
+                }
+            }
+        ));
+        this.defaultEnv.put("//", (FVal) new FVal_JFN(
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                return new FVal_IDX(
+                    ((FVal_IDX)(x[0])).u / ((FVal_IDX)(x[1])).u
+                );
             }
         ));
     }

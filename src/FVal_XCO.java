@@ -1,6 +1,3 @@
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 public class FVal_XCO implements FVal {
     public FVal car;
     public int idx;
