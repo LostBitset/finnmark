@@ -29,6 +29,11 @@ public class FinnmarkParser {
             case '0': case '1': case '2': case '3': case '4':
             case '5': case '6': case '7': case '8': case '9':
             case '-':
+                boolean onlyDashes = true;
+                for (int i = 0; i < s.length(); i++) {
+                    if (s.charAt(i) != '-') onlyDashes = false;
+                }
+                if (onlyDashes) return parseSym(s);
                 if (s.charAt(s.length() - 1) == 'a') {
                     return asIdx(readDecInt(
                         s.substring(0, s.length() - 1)

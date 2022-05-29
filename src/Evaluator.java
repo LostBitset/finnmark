@@ -11,6 +11,12 @@ public class Evaluator {
             1,
             (x, env) -> { System.out.println(((FVal_STR)(x[0])).u); return (FVal)(x[0]); }
         ));
+        this.defaultEnv.put("#t", (FVal) new FVal_BLN(true));
+        this.defaultEnv.put("#f", (FVal) new FVal_BLN(false));
+        this.defaultEnv.put("not", eval_any(
+            FinnmarkParser.parseExpr("(fun x (if x #f #t))"),
+            this.defaultEnv
+        ));
         this.defaultEnv.put(":", (FVal) new FVal_JFN(
             2,
             (x, env) -> {
@@ -95,9 +101,6 @@ public class Evaluator {
                 FVal fun = eval_any(x[0], env);
                 if (fun instanceof FVal_JFN) {
                     Integer jfnArity = ((FVal_JFN)fun).arity;
-                    if (jfnArity == null) throw new Error(
-                        String.format("No specified arity for %s", fun)
-                    );
                     return new FVal_IDX(
                         jfnArity
                     );
@@ -106,10 +109,13 @@ public class Evaluator {
                     ((FVal_FUN)fun).args.length
                 );
                 else if (fun instanceof FVal_IDX) return new FVal_IDX(
-                    1
+                    1 // Actually takes one arg
+                );
+                else if (fun instanceof FVal_XCO) return new FVal_IDX(
+                    2 // Variadic constructs should have arity 2
                 );
                 else throw new Error(
-                    String.format("Arity not given for type `%s'", x.getClass().getName())
+                    String.format("Arity not given for type `%s'", x[0].getClass().getName())
                 );
             }
         ));
@@ -255,7 +261,13 @@ public class Evaluator {
             (xE, env) -> {
                 FVal[] x = new FVal[xE.length];
                 for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
-                if (x[0].getClass() != x[1].getClass()) return new FVal_BLN(false);
+                if (x[0].getClass() != x[1].getClass()) throw new Error(
+                    String.format(
+                        "Can only compare identical types, not `%s' and `%s'",
+                        x[0].getClass().getName(),
+                        x[1].getClass().getName()
+                    )
+                );
                 else if (x[0] instanceof FVal_BLN) return new FVal_BLN(((FVal_BLN)(x[0])).u == ((FVal_BLN)(x[1])).u);
                 else if (x[0] instanceof FVal_IDX) return new FVal_BLN(((FVal_IDX)(x[0])).u == ((FVal_IDX)(x[1])).u);
                 else if (x[0] instanceof FVal_STR) return new FVal_BLN(((FVal_STR)(x[0])).u.equals(((FVal_STR)(x[1])).u));
@@ -269,7 +281,13 @@ public class Evaluator {
             (xE, env) -> {
                 FVal[] x = new FVal[xE.length];
                 for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
-                if (x[0].getClass() != x[1].getClass()) return new FVal_BLN(false);
+                if (x[0].getClass() != x[1].getClass()) throw new Error(
+                    String.format(
+                        "Can only compare identical types, not `%s' and `%s'",
+                        x[0].getClass().getName(),
+                        x[1].getClass().getName()
+                    )
+                );
                 else if (x[0] instanceof FVal_NUM) return new FVal_BLN(((FVal_NUM)(x[0])).u >= ((FVal_NUM)(x[1])).u);
                 else if (x[0] instanceof FVal_IDX) return new FVal_BLN(((FVal_IDX)(x[0])).u >= ((FVal_IDX)(x[1])).u);
                 else throw new Error(
@@ -282,7 +300,13 @@ public class Evaluator {
             (xE, env) -> {
                 FVal[] x = new FVal[xE.length];
                 for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
-                if (x[0].getClass() != x[1].getClass()) return new FVal_BLN(false);
+                if (x[0].getClass() != x[1].getClass()) throw new Error(
+                    String.format(
+                        "Can only compare identical types, not `%s' and `%s'",
+                        x[0].getClass().getName(),
+                        x[1].getClass().getName()
+                    )
+                );
                 else if (x[0] instanceof FVal_NUM) return new FVal_BLN(((FVal_NUM)(x[0])).u <= ((FVal_NUM)(x[1])).u);
                 else if (x[0] instanceof FVal_IDX) return new FVal_BLN(((FVal_IDX)(x[0])).u <= ((FVal_IDX)(x[1])).u);
                 else throw new Error(
@@ -295,7 +319,13 @@ public class Evaluator {
             (xE, env) -> {
                 FVal[] x = new FVal[xE.length];
                 for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
-                if (x[0].getClass() != x[1].getClass()) return new FVal_BLN(false);
+                if (x[0].getClass() != x[1].getClass()) throw new Error(
+                    String.format(
+                        "Can only compare identical types, not `%s' and `%s'",
+                        x[0].getClass().getName(),
+                        x[1].getClass().getName()
+                    )
+                );
                 else if (x[0] instanceof FVal_NUM) return new FVal_BLN(((FVal_NUM)(x[0])).u > ((FVal_NUM)(x[1])).u);
                 else if (x[0] instanceof FVal_IDX) return new FVal_BLN(((FVal_IDX)(x[0])).u > ((FVal_IDX)(x[1])).u);
                 else throw new Error(
@@ -308,12 +338,85 @@ public class Evaluator {
             (xE, env) -> {
                 FVal[] x = new FVal[xE.length];
                 for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
-                if (x[0].getClass() != x[1].getClass()) return new FVal_BLN(false);
+                if (x[0].getClass() != x[1].getClass()) throw new Error(
+                    String.format(
+                        "Can only compare identical types, not `%s' and `%s'",
+                        x[0].getClass().getName(),
+                        x[1].getClass().getName()
+                    )
+                );
                 else if (x[0] instanceof FVal_NUM) return new FVal_BLN(((FVal_NUM)(x[0])).u < ((FVal_NUM)(x[1])).u);
                 else if (x[0] instanceof FVal_IDX) return new FVal_BLN(((FVal_IDX)(x[0])).u < ((FVal_IDX)(x[1])).u);
                 else throw new Error(
                     String.format("Cannot compare type `%s'", x[0].getClass().getName())
                 );
+            }
+        ));
+        this.defaultEnv.put("++", eval_any(
+            FinnmarkParser.parseExpr("(fun x (+ x 1a))"),
+            this.defaultEnv
+        ));
+        this.defaultEnv.put("--", eval_any(
+            FinnmarkParser.parseExpr("(fun x (- x 1a))"),
+            this.defaultEnv
+        ));
+        this.defaultEnv.put("cl", (FVal) new FVal_JFN(
+            1,
+            (x, env) -> {
+                FVal[] arrArity = new FVal[] { new FVal_SYM("arity"), x[0] };
+                FVal[] arrDec = new FVal[] { new FVal_SYM("--"), new FVal_LST(arrArity) };
+                FVal[] arr = new FVal[3];
+                arr[0] = new SpecialForm('-');
+                arr[1] = eval_code(new FVal_LST(arrDec), env);
+                arr[2] = x[0];
+                return eval_any(
+                    new FVal_LST(arr),
+                    env
+                );
+            }
+        ));
+        this.defaultEnv.put("flip", eval_any(
+            FinnmarkParser.parseExpr("(chain (fun f a b (f b a)) (cl) (cl))"),
+            this.defaultEnv
+        ));
+        this.defaultEnv.put("&", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                if ((x[0] instanceof FVal_IDX) && (x[1] instanceof FVal_IDX)) {
+                    return new FVal_IDX(
+                        ((FVal_IDX)(x[0])).u & ((FVal_IDX)(x[1])).u
+                    );
+                } else {
+                    throw new Error(
+                        String.format(
+                            "Cannot bitwise and types `%s' and `%s'",
+                            x[0].getClass().getName(),
+                            x[1].getClass().getName()
+                        )
+                    );
+                }
+            }
+        ));
+        this.defaultEnv.put("|", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                if ((x[0] instanceof FVal_IDX) && (x[1] instanceof FVal_IDX)) {
+                    return new FVal_IDX(
+                        ((FVal_IDX)(x[0])).u | ((FVal_IDX)(x[1])).u
+                    );
+                } else {
+                    throw new Error(
+                        String.format(
+                            "Cannot bitwise and types `%s' and `%s'",
+                            x[0].getClass().getName(),
+                            x[1].getClass().getName()
+                        )
+                    );
+                }
             }
         ));
     }
@@ -360,7 +463,7 @@ public class Evaluator {
                 { args2[i] = ((FVal_SYM)(cdr[i])).uName; }
                 return new FVal_FUN(args2, cdr[cdr.length - 1]);
             case '-':
-                return new FVal_XCO(cdr[1], (FVal_IDX)(cdr[0]));
+                return new FVal_XCO(cdr[1], (FVal_IDX)(eval_any(cdr[0], env)), env);
         }
         for (int i = 0; i < cdr.length; i++) {
             cdr[i] = eval_any(cdr[i], env);
@@ -372,7 +475,7 @@ public class Evaluator {
             return ((FVal_JFN)car).lambda.apply(cdr, env);
         }
         if (car instanceof FVal_XCO) {
-            return ((FVal_XCO)car).introduce(cdr, this);
+            return ((FVal_XCO)car).introduce(cdr, this, env);
         }
         if (!(car instanceof FVal_FUN)) throw new Error(
             String.format("Cannot apply type `%s'", car.getClass().getName())
