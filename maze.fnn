@@ -8,9 +8,9 @@
             (map wall-p)
             (map-idx
                 (fun x i
-                    (or x (= i idx-backtracking))))
+                    (and (not x) (=/= i idx-backtracking))))
             (with idx-backtracking
-                (chain pos (2a) (+ 2a) (mod 3a)))))
+                (chain pos (2a) (+ 2a) (((co 0a mod) 4a))))))
     (with-fn adj-positions pos
         (chain nil
             (: (mod-pos pos id -- id))

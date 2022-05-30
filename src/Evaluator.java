@@ -345,6 +345,10 @@ public class Evaluator {
                 );
             }
         ));
+        this.defaultEnv.put("=/=", eval_any(
+            FinnmarkParser.parseExpr("(fun a b (not (= a b)))"),
+            this.defaultEnv
+        ));
         this.defaultEnv.put(">=", (FVal) new FVal_JFN(
             2,
             (xE, env) -> {
