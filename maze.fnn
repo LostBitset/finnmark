@@ -1,5 +1,5 @@
 (chain
-    (show (adj end))
+    (show (adj-positions `(0a 0a 0a)))
     (with-fn solve steps avoid
         nil)
     (with-fn adj pos
@@ -12,11 +12,16 @@
             (with idx-backtracking
                 (chain pos (2a) (+ 2a) (mod 3a)))))
     (with-fn adj-positions pos
-        `(
-            `((-- (0a pos)) (1a pos))
-            `((0a pos) (++ (1a pos)))
-            `((++ (0a pos)) (1a pos))
-            `((0a pos) (-- (1a pos)))))
+        (chain nil
+            (: (mod-pos pos id -- id))
+            (: (mod-pos pos ++ id id))
+            (: (mod-pos pos id ++ id))
+            (: (mod-pos pos -- id id))))
+    (with-fn mod-pos pos x-fun y-fun a-fun
+        (chain nil
+            (: (a-fun (2a pos)))
+            (: (y-fun (1a pos)))
+            (: (x-fun (0a pos)))))
     (with-fn wall-p pos
         (chain
             (= (& row mask) 0a)
