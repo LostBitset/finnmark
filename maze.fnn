@@ -1,5 +1,7 @@
 (chain
     (show (adj start))
+    (with-fn leftmost pos
+        (rot-left (2a pos) (range 4a)))
     (with-fn adj pos
         (chain
             (adj-positions pos)

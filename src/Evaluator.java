@@ -80,6 +80,16 @@ public class Evaluator {
                 return new FVal_QTD(new FVal_LST(arr_pr));
             }
         ));
+        this.defaultEnv.put("range", (FVal) new FVal_JFN(
+            1,
+            (x, env) -> {
+                FVal_IDX upperObj = (FVal_IDX) eval_any(x[0], env);
+                int upper = upperObj.u;
+                FVal[] arr = new FVal[upper];
+                for (int i = 0; i < upper; i++) arr[i] = new FVal_IDX(i);
+                return new FVal_QTD(new FVal_LST(arr));
+            }
+        ));
         this.defaultEnv.put("rev", (FVal) new FVal_JFN(
             1,
             (x, env) -> {
@@ -88,6 +98,18 @@ public class Evaluator {
                 FVal[] arr = lst.u;
                 FVal[] arr_pr = new FVal[lst.u.length];
                 for (int i = 0; i < arr_pr.length; i++) arr_pr[i] = arr[arr.length - i - 1];
+                return new FVal_QTD(new FVal_LST(arr_pr));
+            }
+        ));
+        this.defaultEnv.put("rot-left", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                int offset = ((FVal_IDX)(x[0])).u;
+                FVal[] arr = ((FVal_LST)(((FVal_QTD)(x[1])).inner)).u;
+                FVal[] arr_pr = new FVal[arr.length];
+                for (int i = 0; i < arr.length; i++) arr_pr[i] = arr[(i + offset) % arr.length];
                 return new FVal_QTD(new FVal_LST(arr_pr));
             }
         ));
