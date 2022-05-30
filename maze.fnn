@@ -1,7 +1,5 @@
 (chain
     (show (adj start))
-    (with-fn solve steps avoid
-        nil)
     (with-fn adj pos
         (chain
             (adj-positions pos)
@@ -26,7 +24,7 @@
         (chain
             (= (& row mask) 0a)
             (not)
-            (with mask (<< $1a (++ (1a pos))))
+            (with mask (<< $1a (1a pos)))
             (with row ((0a pos) maze))))
     (with start
         (if (= (1a start) 0a)

@@ -24,7 +24,6 @@ public class FVal_XCO implements FVal {
             (x, env) -> {
                 this.localEnv.putAll(env);
                 FVal[] res = new FVal[this.fill.length + 2];
-                System.out.println(this.car);
                 res[0] = evaluator.eval_any(this.car, env);
                 for (int i = 0, iF = 0; i < this.fill.length + 1; i++) {
                     if (i == this.idx) {
@@ -34,7 +33,6 @@ public class FVal_XCO implements FVal {
                         iF++;
                     }
                 }
-                System.out.println(new FVal_LST(res));
                 return evaluator.eval_code(new FVal_LST(res), this.localEnv);
             }
         );
