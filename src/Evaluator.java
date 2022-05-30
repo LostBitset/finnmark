@@ -612,6 +612,25 @@ public class Evaluator {
                 return acc;
             }
         ));
+        this.defaultEnv.put("zip", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                FVal[] fst = ((FVal_LST)(((FVal_QTD)(x[0])).inner)).u;
+                FVal[] snd = ((FVal_LST)(((FVal_QTD)(x[1])).inner)).u;
+                FVal[] result = new FVal[Math.min(fst.length, snd.length)];
+                for (int i = 0; i < result.length; i++) {
+                    FVal[] tuple = new FVal[] { fst[i], snd[i] };
+                    result[i] = new FVal_QTD(new FVal_LST(tuple));
+                }
+                return new FVal_QTD(new FVal_LST(result));
+            }
+        ));
+        this.defaultEnv.put("all=", eval_any(
+            FinnmarkParser.parseExpr("(fun a b (fold (fun x a (and (= (0a x) (1a x)) a)) #t (zip a b)))"),
+            this.defaultEnv
+        ));
     }
 
     public FVal eval_code(FVal_LST expr, HashMap<String,FVal> env) {

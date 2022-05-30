@@ -1,9 +1,15 @@
-(chain
-    (show (loop (fun x (=/= (mod x 2a) 0a)) -- 7a))
+(chain nil
+    (disc (println 'left maze at (15,30)'))
+    (disc (println ''))
+    (disc
+        (loop
+            (fun x (not (all= end x)))
+            next-show
+            start))
     (with-fn next-show pos-orig
         (chain pos-new
-            (disc (show-turn pos-new pos-orig))
             (disc (show-coords pos-new))
+            (disc (show-turn pos-new pos-orig))
             (with pos-new (next pos-orig))))
     (with-fn next pos
         (chain
@@ -75,4 +81,4 @@
                 (: (1a start))
                 (: (0a start)))
             start))
-    (with end `(15a 28a 1a)))
+    (with end `(15a 29a 1a)))
