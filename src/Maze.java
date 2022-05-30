@@ -30,6 +30,7 @@ public class Maze {
         env.put("maze", maze);
         env.put("start", new FVal_QTD(new FVal_LST(args)));
         evaluator.eval_any(code, env);
+        System.out.println("");
     }
 
     public FVal fnnMaze() {

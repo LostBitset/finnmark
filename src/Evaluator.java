@@ -46,6 +46,10 @@ public class Evaluator {
                 );
             }
         ));
+        this.defaultEnv.put("disc", eval_any(
+            FinnmarkParser.parseExpr("(fun a b b)"),
+            this.defaultEnv
+        ));
         this.defaultEnv.put("#t", (FVal) new FVal_BLN(true));
         this.defaultEnv.put("#f", (FVal) new FVal_BLN(false));
         this.defaultEnv.put("not", eval_any(
@@ -67,6 +71,14 @@ public class Evaluator {
         this.defaultEnv.put("nor", eval_any(
             FinnmarkParser.parseExpr("(fun a b (not (or a b)))"),
             this.defaultEnv
+        ));
+        this.defaultEnv.put("itoa", (FVal) new FVal_JFN(
+            1,
+            (x, env) -> {
+                FVal_IDX idxObj = (FVal_IDX) eval_any(x[0], env);
+                int idx = idxObj.u;
+                return new FVal_STR("" + idx);
+            }
         ));
         this.defaultEnv.put(":", (FVal) new FVal_JFN(
             2,
@@ -110,6 +122,20 @@ public class Evaluator {
                 FVal[] arr = ((FVal_LST)(((FVal_QTD)(x[1])).inner)).u;
                 FVal[] arr_pr = new FVal[arr.length];
                 for (int i = 0; i < arr.length; i++) arr_pr[i] = arr[(i + offset) % arr.length];
+                return new FVal_QTD(new FVal_LST(arr_pr));
+            }
+        ));
+        this.defaultEnv.put("rot-right", (FVal) new FVal_JFN(
+            2,
+            (xE, env) -> {
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                int offset = ((FVal_IDX)(x[0])).u;
+                FVal[] arr = ((FVal_LST)(((FVal_QTD)(x[1])).inner)).u;
+                FVal[] arr_pr = new FVal[arr.length];
+                for (int i = 0; i < arr.length; i++) {
+                    arr_pr[i] = arr[((i - offset) + (2 * arr.length)) % arr.length];
+                }
                 return new FVal_QTD(new FVal_LST(arr_pr));
             }
         ));
@@ -564,6 +590,28 @@ public class Evaluator {
                 }
             }
         ));
+        this.defaultEnv.put("loop", (FVal) new FVal_JFN(
+            3,
+            (xE, env) -> {
+                // (loop pred fun init)
+                FVal[] x = new FVal[xE.length];
+                for (int i = 0; i < xE.length; i++) x[i] = eval_any(xE[i], env);
+                FVal acc = x[2];
+                FVal[] predExpr = new FVal[2];
+                FVal[] funExpr = new FVal[2];
+                predExpr[0] = x[0];
+                funExpr[0] = x[1];
+                predExpr[1] = acc;
+                while (
+                    ((FVal_BLN) eval_any(new FVal_LST(predExpr), env)).u
+                ) {
+                    funExpr[1] = acc;
+                    acc = eval_any(new FVal_LST(funExpr), env);
+                    predExpr[1] = acc;
+                }
+                return acc;
+            }
+        ));
     }
 
     public FVal eval_code(FVal_LST expr, HashMap<String,FVal> env) {
@@ -656,6 +704,7 @@ public class Evaluator {
                 expr.u,
                 Stream.of(expr.refs)
                     .map(env::get)
+                    .map(x -> eval_any(x, env))
                     .map(x -> {
                         if (x instanceof FVal_STR) return ((FVal_STR)x).u;
                         else return x.toString();

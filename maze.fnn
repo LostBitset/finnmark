@@ -1,16 +1,51 @@
 (chain
-    (show (adj start))
+    (show (next-show `(7a 1a 1a)))
+    (with-fn next-show pos-orig
+        (chain pos-new
+            (disc (show-turn pos-new pos-orig))
+            (disc (show-coords pos-new))
+            (with pos-new (next pos-orig))))
+    (with-fn next pos
+        (chain
+            (fold
+                (fun x a
+                    (chain
+                        (:
+                            (chain nil
+                                (: x)
+                                (: (1a (x opts)))
+                                (: (0a (x opts))))
+                            (: #t nil))
+                        (if (not (x ok)) a)
+                        (if (1a a) a)
+                        ))
+                (: nil (: #f nil))
+                order)
+            (0a)
+            (with ok (adj pos))
+            (with opts (adj-positions pos))
+            (with order (leftmost pos))))
+    (with-fn show-coords pos
+        (chain
+            (print ~'(%x%,%y%) ')
+            (with x (itoa (0a pos)))
+            (with y (itoa (1a pos)))))
+    (with-fn show-turn pos orig-pos
+        (chain nil
+            (if (= (2a pos) 0a) (println ' 90'))
+            (if (= (2a pos) 1a) (println ' 0'))
+            (if (= (2a pos) 2a) (println '-90'))
+            (if (= (2a pos) 3a) (println ' 180'))
+            (disc (print ' change angle to '))
+            (disc (println ''))
+            (if (= (2a pos) (2a orig-pos)) nil)))
     (with-fn leftmost pos
-        (rot-left (2a pos) (range 4a)))
+        (rot-right (+ 2a (2a pos)) (rev (range 4a))))
     (with-fn adj pos
         (chain
             (adj-positions pos)
             (map wall-p)
-            (map-idx
-                (fun x i
-                    (and (not x) (=/= i idx-backtracking))))
-            (with idx-backtracking
-                (chain pos (2a) (+ 2a) (((co 0a mod) 4a))))))
+            (map not)))
     (with-fn adj-positions pos
         (chain nil
             (: (mod-pos pos id -- id))
@@ -37,7 +72,7 @@
                         (if (= (2a start) 0a) 1a)
                         (if (= (2a start) -90a) 2a)
                         (if (= (2a start) 180a) 3a)))
-                (: (++ (1a start)))
+                (: (1a start))
                 (: (0a start)))
             start))
     (with end `(15a 28a 1a)))
