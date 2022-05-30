@@ -1,5 +1,5 @@
 (chain
-    (show (next-show `(7a 1a 1a)))
+    (show (loop (fun x (=/= (mod x 2a) 0a)) -- 7a))
     (with-fn next-show pos-orig
         (chain pos-new
             (disc (show-turn pos-new pos-orig))
