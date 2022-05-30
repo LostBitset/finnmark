@@ -1,5 +1,5 @@
 (chain
-    (show (adj-positions `(0a 0a 0a)))
+    (show (adj end))
     (with-fn solve steps avoid
         nil)
     (with-fn adj pos
