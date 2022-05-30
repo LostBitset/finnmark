@@ -7,6 +7,16 @@ public class Evaluator {
     
     public Evaluator() {
         this.defaultEnv = new HashMap<>();
+        this.defaultEnv.put("print", (FVal) new FVal_JFN(
+            1,
+            (x, env) -> {
+                FVal e = eval_any(x[0], env);
+                System.out.print(((FVal_STR)(
+                    e
+                )).u);
+                return (FVal)(e);
+            }
+        ));
         this.defaultEnv.put("println", (FVal) new FVal_JFN(
             1,
             (x, env) -> {
